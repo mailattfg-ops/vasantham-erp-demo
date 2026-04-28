@@ -191,20 +191,29 @@ export function Login() {
         </form>
 
         {/* Demo credentials */}
-        <div style={{
-          marginTop: 24,
-          background: '#FAFAF8',
-          border: '1px solid rgba(201,149,42,0.2)',
-          borderRadius: 8, padding: '10px 14px',
-        }}>
+        <div
+          onClick={() => { setEmail(VALID_EMAIL); setPassword(VALID_PASSWORD); setError('') }}
+          style={{
+            marginTop: 24,
+            background: '#FAFAF8',
+            border: '1px solid rgba(201,149,42,0.2)',
+            borderRadius: 8, padding: '10px 14px',
+            cursor: 'pointer', transition: 'border-color .15s, background .15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(201,149,42,0.5)'; e.currentTarget.style.background = '#F5F3EE' }}
+          onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(201,149,42,0.2)'; e.currentTarget.style.background = '#FAFAF8' }}
+          title="Click to autofill"
+        >
           <div style={{
             fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase',
             color: 'var(--gold)', marginBottom: 5, fontFamily: 'var(--font-body)',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           }}>
-            Demo Credentials
+            <span>Demo Credentials</span>
+            <span style={{ fontSize: 9, opacity: 0.7, fontWeight: 500, letterSpacing: '.05em' }}>click to fill</span>
           </div>
           <div style={{ fontSize: 12, color: '#666', fontFamily: 'var(--font-body)', lineHeight: 1.7 }}>
-            <span style={{ color: '#444', fontWeight: 500 }}>Email:</span> admin@vasantham.com<br/>
+            <span style={{ color: '#444', fontWeight: 500 }}>Email:</span> {VALID_EMAIL}<br/>
             <span style={{ color: '#444', fontWeight: 500 }}>Password:</span> admin123
           </div>
         </div>
