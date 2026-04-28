@@ -1,0 +1,57 @@
+@import './tokens.css';
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+  min-width: 1024px;
+}
+
+input, select, textarea, button {
+  font-family: var(--font-body);
+}
+
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="search"],
+select,
+textarea {
+  border: 1px solid var(--border-input);
+  border-radius: var(--r-xs);
+  padding: 4px 8px;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--surface);
+  outline: none;
+  transition: border-color .15s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(201,149,42,0.12);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 13px;
+}
+
+a { text-decoration: none; color: inherit; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-dark); }
+
+@media print {
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+}

@@ -1,0 +1,51 @@
+:root {
+  --gold:          #C9952A;
+  --gold-50:       #FDF8EE;
+  --gold-100:      #F5E6C0;
+  --gold-700:      #8B6519;
+
+  --menubar-bg:    #0A0C12;
+  --menubar-text:  rgba(255,255,255,0.65);
+  --menubar-active:#C9952A;
+
+  --sidebar-bg:    #0F1117;
+  --sidebar-hover: rgba(255,255,255,0.05);
+  --sidebar-active-bg: rgba(201,149,42,0.14);
+  --sidebar-active-border: #C9952A;
+  --sidebar-active-text: #C9952A;
+
+  --bg:            #F2F0EB;
+  --surface:       #FFFFFF;
+  --surface-2:     #F7F5F1;
+  --toolbar-bg:    #ECEAE4;
+
+  --ink:           #1A1714;
+  --ink-600:       #3D3730;
+  --ink-400:       #7A7268;
+  --ink-200:       #C8C2BA;
+
+  --border:        #D4CEC6;
+  --border-dark:   #B8B0A6;
+  --border-input:  #B0A89E;
+
+  --success:       #1E6B45;
+  --success-bg:    #EBF5F0;
+  --warning:       #B45309;
+  --warning-bg:    #FEF3C7;
+  --danger:        #B91C1C;
+  --danger-bg:     #FEE2E2;
+  --info:          #1E40AF;
+  --info-bg:       #EFF6FF;
+
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.07);
+  --shadow-md:  0 3px 10px rgba(0,0,0,.09);
+  --shadow-lg:  0 6px 20px rgba(0,0,0,.12);
+
+  --r-xs: 3px;
+  --r-sm: 5px;
+  --r-md: 8px;
+  --r-lg: 12px;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+}
