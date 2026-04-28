@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useNavStore } from '../../store/navStore'
+import { useAuthStore } from '../../store/authStore'
 import {
   Package, Layers, Receipt, Users, Truck, UserCheck, Building2,
   ShoppingCart, FileText, RotateCcw, ShoppingBag, BookOpen,
@@ -138,6 +139,13 @@ export function Sidebar() {
 
 function UserChip() {
   const navigate = useNavigate()
+  const logout   = useAuthStore(s => s.logout)
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
+
   return (
     <div style={{
       padding: '10px 14px', borderTop: '1px solid rgba(255,255,255,0.07)',
@@ -153,7 +161,7 @@ function UserChip() {
         <div style={{ fontSize: 10, color: 'rgba(201,149,42,0.6)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Admin</div>
       </div>
       <button
-        onClick={() => navigate('/login')}
+        onClick={handleLogout}
         style={{ color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
         title="Logout"
       >

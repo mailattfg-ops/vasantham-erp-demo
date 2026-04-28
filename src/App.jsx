@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { useAuthStore } from './store/authStore'
 import { Layout } from './components/layout/Layout'
 import { Login } from './pages/Login'
 import { Dashboard } from './pages/Dashboard'
@@ -28,12 +29,17 @@ import { TopItems } from './pages/mis/TopItems'
 import { CategoryAnalysis } from './pages/mis/CategoryAnalysis'
 import { PaymentAnalysis } from './pages/mis/PaymentAnalysis'
 
+function PrivateRoute({ children }) {
+  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
+  return isAuthenticated ? children : <Navigate to="/login" replace />
+}
+
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Layout />}>
+        <Route path="/" element={<PrivateRoute><Layout /></PrivateRoute>}>
           <Route index element={<Dashboard />} />
           <Route path="inventory"    element={<Inventory />} />
           <Route path="item-groups"  element={<ItemGroups />} />
