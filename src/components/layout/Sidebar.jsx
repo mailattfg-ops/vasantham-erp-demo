@@ -1,6 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useNavStore } from '../../store/navStore'
 import { useAuthStore } from '../../store/authStore'
+import { useToastStore } from '../../store/toastStore'
 import {
   Package, Layers, Receipt, Users, Truck, UserCheck, Building2,
   ShoppingCart, FileText, RotateCcw, ShoppingBag, BookOpen,
@@ -8,6 +9,8 @@ import {
   FileSpreadsheet, BarChart, LayoutDashboard, Award, PieChart,
   CreditCard, LogOut
 } from 'lucide-react'
+
+const ENABLED_PATHS = new Set(['/inventory'])
 
 const SIDEBAR_ITEMS = {
   registration: [
@@ -69,8 +72,9 @@ const SIDEBAR_ITEMS = {
 
 export function Sidebar() {
   const { activeMenu } = useNavStore()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const navigate    = useNavigate()
+  const location    = useLocation()
+  const addToast    = useToastStore(s => s.addToast)
 
   const sections = SIDEBAR_ITEMS[activeMenu] || []
 
@@ -102,14 +106,25 @@ export function Sidebar() {
               {sec.section}
             </div>
             {sec.items.map((item) => {
-              const Icon = item.icon
-              const isActive = location.pathname === item.path ||
+              const Icon     = item.icon
+              const enabled  = ENABLED_PATHS.has(item.path)
+              const isActive = enabled && (
+                location.pathname === item.path ||
                 (item.path !== '/mis' && location.pathname.startsWith(item.path) && item.path.length > 4)
-                || location.pathname === item.path
+              )
+
+              const handleClick = () => {
+                if (enabled) {
+                  navigate(item.path)
+                } else {
+                  addToast('🚧 Coming Soon — This module will be available in the full version', 'info')
+                }
+              }
+
               return (
                 <button
                   key={item.path}
-                  onClick={() => navigate(item.path)}
+                  onClick={handleClick}
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                     padding: '7px 16px 7px 13px',
@@ -117,15 +132,28 @@ export function Sidebar() {
                     borderLeft: isActive ? '3px solid var(--sidebar-active-border)' : '3px solid transparent',
                     color: isActive ? 'var(--sidebar-active-text)' : 'rgba(255,255,255,0.55)',
                     fontSize: 13, fontFamily: 'var(--font-body)', fontWeight: isActive ? 500 : 400,
-                    cursor: 'pointer', border: 'none', textAlign: 'left',
+                    cursor: enabled ? 'pointer' : 'default',
+                    border: 'none', textAlign: 'left',
+                    opacity: enabled ? 1 : 0.5,
                     transition: 'all .12s',
                     borderTopLeftRadius: 0, borderBottomLeftRadius: 0,
                   }}
-                  onMouseEnter={e => { if(!isActive) { e.currentTarget.style.background='var(--sidebar-hover)'; e.currentTarget.style.color='rgba(255,255,255,0.8)' }}}
-                  onMouseLeave={e => { if(!isActive) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.55)' }}}
+                  onMouseEnter={e => { if (enabled && !isActive) { e.currentTarget.style.background='var(--sidebar-hover)'; e.currentTarget.style.color='rgba(255,255,255,0.8)' }}}
+                  onMouseLeave={e => { if (enabled && !isActive) { e.currentTarget.style.background='transparent'; e.currentTarget.style.color='rgba(255,255,255,0.55)' }}}
                 >
                   <Icon size={15} style={{ flexShrink: 0 }} />
-                  <span>{item.label}</span>
+                  <span style={{ flex: 1 }}>{item.label}</span>
+                  {!enabled && (
+                    <span style={{
+                      fontSize: 9, fontWeight: 600, letterSpacing: '.04em',
+                      background: 'rgba(201,149,42,0.15)', color: 'rgba(201,149,42,0.7)',
+                      border: '1px solid rgba(201,149,42,0.2)',
+                      borderRadius: 3, padding: '1px 5px', flexShrink: 0,
+                      fontFamily: 'var(--font-body)',
+                    }}>
+                      SOON
+                    </span>
+                  )}
                 </button>
               )
             })}
