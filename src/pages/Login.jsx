@@ -71,8 +71,9 @@ export function Login() {
           position: 'relative', zIndex: 1,
           background: '#fff',
           borderRadius: 14,
-          padding: '44px 44px 36px',
+          padding: 'clamp(24px, 5vw, 44px) clamp(20px, 6vw, 44px) clamp(20px, 4vw, 36px)',
           width: '100%', maxWidth: 420,
+          margin: '0 16px',
           boxShadow: '0 24px 72px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,149,42,0.12)',
         }}
       >

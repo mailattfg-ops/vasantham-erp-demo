@@ -2,6 +2,7 @@ import { useAppStore } from '../store/appStore'
 import { formatINR, formatINRCompact, formatDate, getStockStatus } from '../utils/format'
 import { useNavStore } from '../store/navStore'
 import { useNavigate } from 'react-router-dom'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 import {
   PieChart as RechartsPie, Pie, Cell, Tooltip, ResponsiveContainer,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend
@@ -15,6 +16,7 @@ export function Dashboard() {
   const { invoices, items, vendors, purchaseOrders } = useAppStore()
   const { setActiveMenu } = useNavStore()
   const navigate = useNavigate()
+  const { isMobile } = useBreakpoint()
 
   const todayInv = invoices.filter(i => new Date(i.date).toDateString() === new Date().toDateString())
   const todaySales = todayInv.reduce((s,i)=>s+i.total,0)
@@ -34,9 +36,9 @@ export function Dashboard() {
   const goTo = (menu, path) => { setActiveMenu(menu); navigate(path) }
 
   return (
-    <div style={{ padding:20, display:'flex', flexDirection:'column', gap:16 }}>
+    <div style={{ padding: isMobile ? 12 : 20, display:'flex', flexDirection:'column', gap: isMobile ? 10 : 16 }}>
       {/* KPI Cards */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12 }}>
+      <div style={{ display:'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: isMobile ? 8 : 12 }}>
         <KPICard
           label="Today's Sales"
           value={formatINRCompact(todaySales)}
@@ -68,7 +70,7 @@ export function Dashboard() {
       </div>
 
       {/* Row 2 */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+      <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 8 : 12 }}>
         {/* Payment Split Donut */}
         <div style={{ background:'var(--surface)', borderRadius:8, padding:16, boxShadow:'var(--shadow-sm)' }}>
           <div style={{ fontSize:13, fontWeight:600, marginBottom:12 }}>Today's Payment Split</div>
@@ -131,7 +133,7 @@ export function Dashboard() {
       </div>
 
       {/* Row 3 */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+      <div style={{ display:'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 8 : 12 }}>
         {/* Top Items by Stock Value */}
         <div style={{ background:'var(--surface)', borderRadius:8, padding:16, boxShadow:'var(--shadow-sm)' }}>
           <div style={{ fontSize:13, fontWeight:600, marginBottom:12 }}>Top Items by Stock Value</div>
@@ -147,28 +149,30 @@ export function Dashboard() {
         </div>
 
         {/* Recent Sales */}
-        <div style={{ background:'var(--surface)', borderRadius:8, padding:16, boxShadow:'var(--shadow-sm)' }}>
+        <div style={{ background:'var(--surface)', borderRadius:8, padding: isMobile ? 12 : 16, boxShadow:'var(--shadow-sm)' }}>
           <div style={{ fontSize:13, fontWeight:600, marginBottom:12 }}>Recent Invoices</div>
-          <table style={{ width:'100%', fontSize:12, borderCollapse:'collapse' }}>
-            <thead>
-              <tr style={{ background:'var(--surface-2)' }}>
-                <th style={{ padding:'4px 8px', textAlign:'left', color:'var(--ink-400)', fontSize:11, fontWeight:600 }}>Invoice</th>
-                <th style={{ padding:'4px 8px', textAlign:'left', color:'var(--ink-400)', fontSize:11, fontWeight:600 }}>Customer</th>
-                <th style={{ padding:'4px 8px', textAlign:'right', color:'var(--ink-400)', fontSize:11, fontWeight:600 }}>Total</th>
-                <th style={{ padding:'4px 8px', color:'var(--ink-400)', fontSize:11, fontWeight:600 }}>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentInvoices.map(inv => (
-                <tr key={inv.id} style={{ borderBottom:'1px solid var(--border)' }}>
-                  <td style={{ padding:'5px 8px', fontWeight:600 }}>{inv.invoiceNo}</td>
-                  <td style={{ padding:'5px 8px', color:'var(--ink-600)', maxWidth:120, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{inv.customerName}</td>
-                  <td style={{ padding:'5px 8px', textAlign:'right', fontWeight:700 }}>{formatINR(inv.total)}</td>
-                  <td style={{ padding:'5px 8px' }}><StatusBadge status={inv.status} /></td>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width:'100%', fontSize:12, borderCollapse:'collapse', minWidth: isMobile ? 320 : 'unset' }}>
+              <thead>
+                <tr style={{ background:'var(--surface-2)' }}>
+                  <th style={{ padding:'4px 8px', textAlign:'left', color:'var(--ink-400)', fontSize:11, fontWeight:600 }}>Invoice</th>
+                  {!isMobile && <th style={{ padding:'4px 8px', textAlign:'left', color:'var(--ink-400)', fontSize:11, fontWeight:600 }}>Customer</th>}
+                  <th style={{ padding:'4px 8px', textAlign:'right', color:'var(--ink-400)', fontSize:11, fontWeight:600 }}>Total</th>
+                  <th style={{ padding:'4px 8px', color:'var(--ink-400)', fontSize:11, fontWeight:600 }}>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {recentInvoices.map(inv => (
+                  <tr key={inv.id} style={{ borderBottom:'1px solid var(--border)' }}>
+                    <td style={{ padding:'5px 8px', fontWeight:600 }}>{inv.invoiceNo}</td>
+                    {!isMobile && <td style={{ padding:'5px 8px', color:'var(--ink-600)', maxWidth:120, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{inv.customerName}</td>}
+                    <td style={{ padding:'5px 8px', textAlign:'right', fontWeight:700 }}>{formatINR(inv.total)}</td>
+                    <td style={{ padding:'5px 8px' }}><StatusBadge status={inv.status} /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -176,27 +180,31 @@ export function Dashboard() {
 }
 
 function KPICard({ label, value, sub, icon:Icon, color, bg, onClick }) {
+  const { isMobile } = useBreakpoint()
   return (
     <div
       onClick={onClick}
       style={{
-        background:'var(--surface)', borderRadius:8, padding:'16px 18px',
-        boxShadow:'var(--shadow-sm)', display:'flex', alignItems:'center', gap:14,
+        background:'var(--surface)', borderRadius:8,
+        padding: isMobile ? '12px 14px' : '16px 18px',
+        boxShadow:'var(--shadow-sm)',
+        display:'flex', alignItems:'center', gap: isMobile ? 10 : 14,
         cursor:'pointer', transition:'box-shadow .15s'
       }}
       onMouseEnter={e=>e.currentTarget.style.boxShadow='var(--shadow-md)'}
       onMouseLeave={e=>e.currentTarget.style.boxShadow='var(--shadow-sm)'}
     >
       <div style={{
-        width:44, height:44, borderRadius:10, background:bg,
+        width: isMobile ? 36 : 44, height: isMobile ? 36 : 44,
+        borderRadius:10, background:bg,
         display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0
       }}>
-        <Icon size={20} style={{ color }} />
+        <Icon size={isMobile ? 16 : 20} style={{ color }} />
       </div>
-      <div>
-        <div style={{ fontSize:11, color:'var(--ink-400)', fontWeight:500, textTransform:'uppercase', letterSpacing:'.04em' }}>{label}</div>
-        <div style={{ fontSize:22, fontWeight:700, color:'var(--ink)', lineHeight:1.2 }}>{value}</div>
-        <div style={{ fontSize:11, color:'var(--ink-400)' }}>{sub}</div>
+      <div style={{ minWidth: 0 }}>
+        <div style={{ fontSize: isMobile ? 10 : 11, color:'var(--ink-400)', fontWeight:500, textTransform:'uppercase', letterSpacing:'.04em', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{label}</div>
+        <div style={{ fontSize: isMobile ? 18 : 22, fontWeight:700, color:'var(--ink)', lineHeight:1.2 }}>{value}</div>
+        <div style={{ fontSize: isMobile ? 10 : 11, color:'var(--ink-400)' }}>{sub}</div>
       </div>
     </div>
   )

@@ -2,12 +2,13 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useNavStore } from '../../store/navStore'
 import { useAuthStore } from '../../store/authStore'
 import { useToastStore } from '../../store/toastStore'
+import { useBreakpoint } from '../../hooks/useBreakpoint'
 import {
   Package, Layers, Receipt, Users, Truck, UserCheck, Building2,
   ShoppingCart, FileText, RotateCcw, ShoppingBag, BookOpen,
   Wallet, BookMarked, Scale, BarChart2, TrendingUp, LineChart,
   FileSpreadsheet, BarChart, LayoutDashboard, Award, PieChart,
-  CreditCard, LogOut
+  CreditCard, LogOut, X
 } from 'lucide-react'
 
 const ENABLED_PATHS = new Set(['/inventory'])
@@ -71,32 +72,74 @@ const SIDEBAR_ITEMS = {
 }
 
 export function Sidebar() {
-  const { activeMenu } = useNavStore()
-  const navigate    = useNavigate()
-  const location    = useLocation()
-  const addToast    = useToastStore(s => s.addToast)
+  const { activeMenu, sidebarOpen, setSidebarOpen } = useNavStore()
+  const navigate  = useNavigate()
+  const location  = useLocation()
+  const addToast  = useToastStore(s => s.addToast)
+  const { isMobile } = useBreakpoint()
 
   const sections = SIDEBAR_ITEMS[activeMenu] || []
 
-  if (activeMenu === 'dashboard') {
-    return (
-      <div style={{
+  const sidebarStyle = isMobile
+    ? {
+        position: 'fixed',
+        top: 84, // TopMenuBar (48) + tabs row (36)
+        left: 0, bottom: 0,
+        width: 240,
+        zIndex: 300,
+        transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition: 'transform .25s cubic-bezier(.4,0,.2,1)',
+        background: 'var(--sidebar-bg)',
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      }
+    : {
         width: 240, background: 'var(--sidebar-bg)', flexShrink: 0,
-        display: 'flex', flexDirection: 'column', overflow: 'hidden'
-      }} className="no-print">
-        <div style={{ flex: 1 }} />
-        <UserChip />
-      </div>
-    )
+        display: 'flex', flexDirection: 'column', overflow: 'hidden',
+      }
+
+  const handleNav = (path, enabled) => {
+    if (enabled) {
+      navigate(path)
+      if (isMobile) setSidebarOpen(false)
+    } else {
+      addToast('🚧 Coming Soon — This module will be available in the full version', 'info')
+      if (isMobile) setSidebarOpen(false)
+    }
   }
 
+  // On desktop, hide sidebar on dashboard
+  if (!isMobile && activeMenu === 'dashboard') return null
+
   return (
-    <div style={{
-      width: 240, background: 'var(--sidebar-bg)', flexShrink: 0,
-      display: 'flex', flexDirection: 'column', overflow: 'hidden'
-    }} className="no-print">
+    <div style={sidebarStyle} className="no-print">
+      {/* Mobile close button */}
+      {isMobile && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '10px 14px 6px',
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+        }}>
+          <span style={{
+            fontSize: 10, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase',
+            color: 'rgba(201,149,42,0.6)',
+          }}>
+            Menu
+          </span>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            style={{ color: 'rgba(255,255,255,0.4)', padding: 2 }}
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 0 8px' }}>
-        {sections.map((sec) => (
+        {sections.length === 0 ? (
+          <div style={{ padding: '20px 16px', color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>
+            Select a module above
+          </div>
+        ) : sections.map((sec) => (
           <div key={sec.section} style={{ marginBottom: 16 }}>
             <div style={{
               fontSize: 10, fontWeight: 600, letterSpacing: '.1em',
@@ -106,28 +149,19 @@ export function Sidebar() {
               {sec.section}
             </div>
             {sec.items.map((item) => {
-              const Icon     = item.icon
-              const enabled  = ENABLED_PATHS.has(item.path)
+              const Icon    = item.icon
+              const enabled = ENABLED_PATHS.has(item.path)
               const isActive = enabled && (
                 location.pathname === item.path ||
                 (item.path !== '/mis' && location.pathname.startsWith(item.path) && item.path.length > 4)
               )
-
-              const handleClick = () => {
-                if (enabled) {
-                  navigate(item.path)
-                } else {
-                  addToast('🚧 Coming Soon — This module will be available in the full version', 'info')
-                }
-              }
-
               return (
                 <button
                   key={item.path}
-                  onClick={handleClick}
+                  onClick={() => handleNav(item.path, enabled)}
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: 10,
-                    padding: '7px 16px 7px 13px',
+                    padding: '8px 16px 8px 13px',
                     background: isActive ? 'var(--sidebar-active-bg)' : 'transparent',
                     borderLeft: isActive ? '3px solid var(--sidebar-active-border)' : '3px solid transparent',
                     color: isActive ? 'var(--sidebar-active-text)' : 'rgba(255,255,255,0.55)',
@@ -185,7 +219,7 @@ function UserChip() {
         fontSize: 12, fontWeight: 700, color: '#0F1117', flexShrink: 0
       }}>AK</div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)', truncate: true }}>Arjun Kumar</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>Arjun Kumar</div>
         <div style={{ fontSize: 10, color: 'rgba(201,149,42,0.6)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Admin</div>
       </div>
       <button

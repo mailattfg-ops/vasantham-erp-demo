@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { Bell, Settings, Search } from 'lucide-react'
-import { useNavStore } from '../../store/navStore'
+import { useBreakpoint } from '../../hooks/useBreakpoint'
 
 const ROUTE_LABELS = {
   '/':                   ['Dashboard'],
@@ -16,10 +16,10 @@ const ROUTE_LABELS = {
   '/sales-returns':      ['Tasks', 'Sales Returns'],
   '/purchases':          ['Tasks', 'Purchase Order'],
   '/purchase-returns':   ['Tasks', 'Purchase Returns'],
-  '/accounts/daybook':   ['Financial Reports', 'Day Book'],
-  '/accounts/cashbook':  ['Financial Reports', 'Cash Book'],
-  '/accounts/ledger':    ['Financial Reports', 'Ledger'],
-  '/accounts/trial':     ['Financial Reports', 'Trial Balance'],
+  '/accounts/daybook':   ['Financial', 'Day Book'],
+  '/accounts/cashbook':  ['Financial', 'Cash Book'],
+  '/accounts/ledger':    ['Financial', 'Ledger'],
+  '/accounts/trial':     ['Financial', 'Trial Balance'],
   '/reports/stock':      ['Reports', 'Stock Report'],
   '/reports/valuation':  ['Reports', 'Stock Valuation'],
   '/reports/sales':      ['Reports', 'Sales Report'],
@@ -32,8 +32,38 @@ const ROUTE_LABELS = {
 }
 
 export function Topbar() {
-  const location = useLocation()
-  const crumbs = ROUTE_LABELS[location.pathname] || ['ERP']
+  const location   = useLocation()
+  const { isMobile } = useBreakpoint()
+  const crumbs     = ROUTE_LABELS[location.pathname] || ['ERP']
+  const pageTitle  = crumbs[crumbs.length - 1]
+
+  if (isMobile) {
+    return (
+      <div style={{
+        height: 48, background: 'var(--surface)',
+        boxShadow: 'var(--shadow-sm)',
+        display: 'flex', alignItems: 'center', padding: '0 14px',
+        gap: 10, flexShrink: 0, zIndex: 10
+      }} className="no-print">
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontSize: 14, fontWeight: 600, color: 'var(--ink)',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+          }}>
+            {pageTitle}
+          </div>
+        </div>
+        <button style={{ color: 'var(--ink-400)', padding: 6 }}>
+          <Bell size={18} />
+        </button>
+        <div style={{
+          width: 30, height: 30, borderRadius: '50%', background: 'var(--gold)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 11, fontWeight: 700, color: '#0F1117', flexShrink: 0
+        }}>AK</div>
+      </div>
+    )
+  }
 
   return (
     <div style={{

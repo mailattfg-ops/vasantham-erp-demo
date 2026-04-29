@@ -7,7 +7,6 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-size: 14px;
-  min-width: 1024px;
 }
 
 input, select, textarea, button {
